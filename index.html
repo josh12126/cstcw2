@@ -224,7 +224,7 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(
                             {
-                                "availableSpaces": quantity
+                                "availableSpaces": this.quantity
                             }
                         )
                     }).then(response => response.json())
