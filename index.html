@@ -178,7 +178,7 @@
                 submit() {
                   console.log(this.user)
                    
-                    fetch('http://localhost:3000/collection/Order', {
+                    fetch('https://cw2cst3145in.herokuapp.com/collection/Order', {
                         method: "post",
                         body: JSON.stringify(this.user),
                         headers: {
