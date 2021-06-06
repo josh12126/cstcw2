@@ -191,7 +191,8 @@
                         cache: "no-store",
                         body: JSON.stringify({
                             name,
-                            phone
+                            phone,
+                            availableInventory
                         })
                     }).then(response => response.json())
                         .then(responseJSON => { 
