@@ -94,11 +94,11 @@
                                 <form @submit.prevent="submit">
                                     <div>
                                         <label for="name">Name</label>
-                                        <input v-model="user.name" type="text" required id="txt-username">
+                                        <input v-model="user.name" type="text" required>
                                     </div>
                                     <div>
                                         <label for="name">Phone</label>
-                                        <input v-model="user.number" type="tel" required id="txt-phone">
+                                        <input v-model="user.number" type="tel" required>  
                                     </div>
                                     <input type="submit" value="Checkout">
                                 </form>
@@ -126,8 +126,9 @@
                 sort: 'ascending',
                 type: '',
                 user: {
-                    name: '',
-                    number: ''
+                    name: '',   // How we can get value here
+                    number: '',
+                    availableInventory: this.lessons
                 }
             },
             methods: {
@@ -174,63 +175,50 @@
 
 
                 },
-                //adds a new order to the order collection
-                
+
+
+
+               
+
                 submit() {
-                    
-                    let name = document.getElementById('txt-username').value;
-                    let phone = document.getElementById('txt-phone').value;
-                    
 
-                    fetch('https://cw2cst3145in.herokuapp.com/collection/Order', {        
-                        method: "POST",
+                  let checkoutData = []
+                  this.cart.forEach((item)=>{
+                    checkoutData.push({name:this.user.name,number:this.user.number,availableInventory:item.availableInventory,subject:item.subject})
+                    this.updateAvailability(item.id, item.availableInventory);
+                })
+                    fetch('https://cw2cst3145in.herokuapp.com/collection/Order', {
+                        method: "post",
+                        body: JSON.stringify(checkoutData),
                         headers: {
-                            "content-Type": 'application/json',
-                        },
-                        mode: "cors",
-                        cache: "no-store",
-                        body: JSON.stringify({
-                            name,
-                            phone,
+                            'Content-Type': 'application/json',
+                        }
+                    }).then((data) => {
+                        data.json().then((response) => {
+                            console.log(response)
+                        })
+                    }).catch((err) => {
+                        console.log(err)
+                    })
 
-                        })
-                    }).then(response => response.json())
-                        .then(responseJSON => { 
-                            console.log("Created order: ", responseJSON);
-                            let availableSpaces = document.getElementById('space').value;
-                            fetch('https://cw2cst3145in.herokuapp.com/collection/lessons').then(
-                                function (res) {
-                                    res.json().then(
-                                        function (json) {
-                                            app.lessons = json;
-                                            
-                                            app.lessons.forEach(lesson => {
-                                                if (lesson.availableInventory != 0) { 
-                                                    lesson.availableInventory -= this.cartcount(lesson.id)
-                                                }
-                                            });
-                                        }
-                                    )
-                                }
-                            )
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                        }); 
+                    app.lessons.forEach(lesson => {
+                        if (lesson.availableInventory != 0) lesson.availableInventory -= this.cartcount(lesson.id)
+                    })
                 },
                 //this method update the lessons available spaces
                 updateAvailability(id, quantity) {
-                    fetch('https://cw2cst3145in.herokuapp.com/collection/lessons/' + id, {
+                    fetch('https://cw2cst3145in.herokuapp.com/collection/lessons' + id, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(
                             {
-                                "availableInventory": quantity
+                                "availableSpaces": quantity
                             }
                         )
                     }).then(response => response.json())
                         .then(data => { return data }).catch(err => { return data });
                 },
+
             },
             computed: {
                 total() {
