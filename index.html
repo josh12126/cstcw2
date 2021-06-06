@@ -231,22 +231,6 @@
                     }).then(response => response.json())
                         .then(data => { return data }).catch(err => { return data });
                 },
-                checkout(body) {                                //consists data that needs to be added
-                    this.cart.forEach(item => {
-                        let body = {
-                            "id": lesson.id,                          //lesson id 
-                            "title": item.title,                    //subject
-                            "name": this.order.name,                //user name
-                            "phone": this.order.phone,                  //user phone
-                            "spaces": 5 - item.availableInventory           //quantity
-                        };
-                        this.saveOrder(body);
-                        this.updateSpace(item._id, item.availableInventory);
-                    });
-                    alert ("Order submitted");  
-                    this.cart = [];
-                }
-
             },
             computed: {
                 total() {
