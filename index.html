@@ -192,7 +192,7 @@
                         body: JSON.stringify({
                             name,
                             phone,
-                            
+
                         })
                     }).then(response => response.json())
                         .then(responseJSON => { 
@@ -220,7 +220,7 @@
                 },
                 //this method update the lessons available spaces
                 updateAvailability(id, quantity) {
-                    fetch('https://cw2cst3145in.herokuapp.com/collection/lessons/'+id, {
+                    fetch('https://cw2cst3145in.herokuapp.com/collection/lessons/' + id, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(
