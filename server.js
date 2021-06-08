@@ -8,12 +8,12 @@ const bodeParser = require('body-parser');
 var cors = require('cors')
 const app = express();
 app.use(cors())
-app.use(bodeParser.json({limit: '5000kb'}))
+app.use(bodeParser.json({ limit: '5000kb' }))
 
 // config Express.js
 app.use(express.json())
 app.set('port', 3000)
-app.use ((req,res,next) => {
+app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     next();
 })
@@ -48,50 +48,61 @@ app.get('/collection/:collectionName', (req, res, next) => {
 
 //adding post
 app.post('/collection/:collectionName', (req, res, next) => {
-    console.log('data',req.body)
-req.collection.insert(req.body, (e, results) => {
-    console.log('result',results)
-if (e) return next(e)
-else res.send(results.ops)
- 
+    console.log('data', req.body)
+    req.collection.insert(req.body, (e, results) => {
+        console.log('result', results)
+        if (e) return next(e)
+        else res.send(results.ops)
+
+    })
 })
+app.put('/collection/:collectionName/:id', (req, res, next) => {
+    req.collection.update(
+        { _id: new ObjectID(req.params.id) },
+        { $set: req.body },
+        { safe: true, multi: false },
+        (e, result) => {
+            if (e) return next(e)
+            res.send((result.result.n === 1) ? { msg: 'success' } : { msg: 'error' })
+        }
+    )
 })
 
 // return with object id 
 
 const ObjectID = require('mongodb').ObjectID;
 app.get('/collection/:collectionName/:id'
-, (req, res, next) => {
-req.collection.findOne({ _id: new ObjectID(req.params.id) }, (e, result) => {
-if (e) return next(e)
-res.send(result)
-})
-})
+    , (req, res, next) => {
+        req.collection.findOne({ _id: new ObjectID(req.params.id) }, (e, result) => {
+            if (e) return next(e)
+            res.send(result)
+        })
+    })
 
 
 //update an object 
 
 app.put('/collection/:collectionName/:id', (req, res, next) => {
-req.collection.update(
-{_id: new ObjectID(req.params.id)},
-{$set: req.body},
-{safe: true, multi: false},
-(e, result) => {
-if (e) return next(e)
-res.send((result.result.n === 1) ? {msg: 'success'} : {msg: 'error'})
-})
+    req.collection.update(
+        { _id: new ObjectID(req.params.id) },
+        { $set: req.body },
+        { safe: true, multi: false },
+        (e, result) => {
+            if (e) return next(e)
+            res.send((result.result.n === 1) ? { msg: 'success' } : { msg: 'error' })
+        })
 })
 
 
 
 
 app.delete('/collection/:collectionName/:id', (req, res, next) => {
-req.collection.deleteOne(
-{ _id: ObjectID(req.params.id) },(e, result) => {
-if (e) return next(e)
-res.send((result.result.n === 1) ?
-{msg: 'success'} : {msg: 'error'})
-})
+    req.collection.deleteOne(
+        { _id: ObjectID(req.params.id) }, (e, result) => {
+            if (e) return next(e)
+            res.send((result.result.n === 1) ?
+                { msg: 'success' } : { msg: 'error' })
+        })
 })
 
 
